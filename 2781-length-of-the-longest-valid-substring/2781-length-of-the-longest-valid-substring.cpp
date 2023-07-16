@@ -1,0 +1,87 @@
+class Solution {
+public:
+    int ans=0;
+    void check(string &word,vector<int>&mp1)
+    {
+        int n=word.length();
+        int st=0;
+        int en=0;
+        
+    
+        while((en<n)&&(st<n))
+        {
+           
+               // en++;
+            int f=0;
+               if(mp1[en]!=0)
+               {
+                 int len1=mp1[en];
+                   if(len1<=(en-st+1))
+                   {st=en-(len1-1)+1;
+                   // cout<<st<<" "<<en<<"\n";
+                     ans=max(ans,en-st+1);
+                   }
+                 else 
+                 {
+                     //st=en+1;
+                     ans=max(ans,en-st+1);
+                 }
+               }
+              else
+                ans=max(ans,en-st+1);
+            
+                en++;
+            
+        }
+      // ans=len;
+       // return 0;
+    }
+    int longestValidSubstring(string word, vector<string>& forbidden) 
+    {
+        unordered_map<string,int>mp;
+        vector<int>mp1;
+        for(int i=0;i<word.length();i++)
+        {
+            mp1.push_back(0);
+        }
+        int n=word.length();
+        int m=forbidden.size();
+      
+        for(int i=0;i<m;i++)
+        {
+            mp[forbidden[i]]++;
+        }
+        for(int i=0;i<n;i++)
+        {
+            string temp;
+            temp+=word[i];
+            if(mp[temp]>0)
+            {
+                mp1[i]=1;
+            }
+        }
+        for(int i=0;i<n;i++)
+        {
+          string temp;
+          for(int j=i;j<=min(n-1,(i+10-1));j++)
+          {
+              temp+=word[j];
+            //  cout<<temp<<" ";
+              if(mp.find(temp)!=mp.end()&&mp[temp]>0)
+              {
+                 
+                      mp1[j]=(j-i+1);
+                  
+                  
+              }
+          }
+        }
+        
+        int l=0;
+        int r=word.length();
+        
+        check(word,mp1);
+      
+        return ans;
+    }
+};
