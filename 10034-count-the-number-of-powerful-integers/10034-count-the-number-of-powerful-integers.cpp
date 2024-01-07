@@ -21,8 +21,7 @@ public:
             //cout<<"in"<<"\n";
            // return 0;
            // cout<<idx<<" "<<"\n";
-            if(leadingz)
-                return 1;
+           
             if(tight)
             {
                 string temp=s;
