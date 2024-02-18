@@ -1,156 +1,123 @@
 #define ll long long int
-class Node{
-    private:
-        bool isend;
-        Node* links[26];
-        ll count=0;
+struct Node
+{
+    Node *arr[26];
+    ll cnt;
     public:
-        bool containsKey(char ch)
-        {
-            return links[ch-'a']!=NULL;
-        }
-        void put(char ch,Node* node)
-        {
-            links[ch-'a']=node;
-        }
-        Node* get(char ch)
-        {
-            return links[ch-'a'];
-        }
-        bool isending()
-        {
-            return isend;
-        }
-        void end()
-        {
-            isend=true;
-        }
-        void pluscount()
-        {
-            count++;
-        }
-        ll getcount()
-        {
-            return count;
-        }
-    
+    bool find(char c)
+    {
+        return (arr[c-'a']!=NULL);
+    }
+    void add(char c,Node *temp1)
+    {
+        arr[c-'a']=temp1;
+        return ;
+    }
+    Node* next(char c)
+    {
+        return arr[c-'a'];
+    }
+    void inc()
+    {
+        cnt++;
+    }
+    ll get()
+    {
+        return cnt;
+    }
 };
-
-class Trie{
-    private:
-        Node* root;
-    public:
-        Trie()
+class Trie
+{
+  Node *root;
+  public:
+  Trie()
+  {
+      root=new Node();
+  }
+  void insert(string &temp,vector<ll>&z)
+  {
+    Node *root1=root;
+    for(int i=0;i<temp.length();i++)
+    {
+        if(!root1->find(temp[i]))
         {
-            root=new Node();
+            //cout<<i<<" ";
+            root1->add(temp[i],new Node());
         }
-        void insert(string &str,vector<int>&val)
+        root1=root1->next(temp[i]);
+        if(i+1==z[temp.length()-i-1])
         {
-            Node* node=root;
-            for(int i=0;i<str.size();i++)
-            {
-                char ch=str[i];
-                if(!node->containsKey(ch))
-                {
-                    node->put(ch,new Node());
-                }
-                node=node->get(ch);
-                if(val[str.size()-i-1]==i+1)
-                {
-                    node->pluscount();
-                }
-                
-            }
-            node->end();
+          //  cout<<temp<<" "<<z[temp.length()-i-1]<<"\n";
+            root1->inc();
         }
-        bool match(string &str)
-        {
-            Node* node=root;
-            for(char ch:str)
-            {
-                if(node->containsKey(ch))
-                {
-                    node=node->get(ch);
-                }
-                else{
-                    return false;
-                }
-            }
-            return node->isending();
-        }
-        ll solve(string &str)
-        {
-            int i=0;
-            Node* node=root;
-            for(i=0;i<str.size();i++)
-            {
-                char ch=str[i];
-                if(node->containsKey(ch))
-                {
-                    node=node->get(ch);
-                }
-                else{
-                    break;
-                }
-            }
-            if(i==str.size())
-            {
-                return node->getcount();
-            }
-            return 0;
-        }
-    
+    }
+  }
+  ll find(string &temp)
+  {
+      Node *root1=root;
+      int i=0;
+      for(i=0;i<temp.length();i++)
+      {
+          //cout<<temp[i]<<" ";
+          if(root1->find(temp[i]))
+          {
+            //  cout<<"2"<<"\n";
+              root1=root1->next(temp[i]);
+          }
+          else
+              break;
+      }
+     // cout<<i<<" "<<temp<<"\n";
+      if(i==temp.length())
+          return root1->get();
+      else
+          return 0;
+  }
 };
+vector<ll> z_algo(string &temp)
+{
+    ll n=temp.length();
+        vector<ll>ans(n,0);
 
-
+    ll l=0;
+    ll r=0;
+    for(int i=1;i<n;i++)
+    {
+        if((i<r))
+            ans[i]=min(ans[i-l],r-i);
+        while((i+ans[i]<n)&&(temp[i+ans[i]]==temp[ans[i]]))
+        {
+            ans[i]++;
+        }
+        if(r<(i+ans[i]))
+        {
+            l=i;
+            r=i+ans[i];
+        }
+    }
+    
+    return ans;
+    
+}
 class Solution {
 public:
     
-    
-    vector<int>  calculateZ(string &input) {
-        vector<int>Z(input.size(),0);
-        int left = 0;
-        int right = 0;
-        for(int k = 1; k < input.size(); k++) {
-            if(k > right) {
-                left = right = k;
-                while(right < input.size() && input[right] == input[right - left]) {
-                    right++;
-                }
-                Z[k] = right - left;
-                right--;
-            } else {
-                int k1 = k - left;
-                if(Z[k1] < right - k + 1) {
-                    Z[k] = Z[k1];
-                } else { 
-                    left = k;
-                    while(right < input.size() && input[right] == input[right - left]) {
-                        right++;
-                    }
-                    Z[k] = right - left;
-                    right--;
-                }
-            }
-        }
-        return Z;
-    }
-    
-    long long countPrefixSuffixPairs(vector<string>& words) {
-        
-        Trie trie;
-        int n=words.size();
-        ll ans=0;
+    long long countPrefixSuffixPairs(vector<string>& words) 
+    {
+     ll ans=0;
+     ll n=words.size();
+        Trie t;
         map<string,int>mp;
-        for(int i=n-1;i>=0;i--)
-        {
-            ans+=mp[words[i]];
-            ans+=trie.solve(words[i]);
-            vector<int>val=calculateZ(words[i]);
-            trie.insert(words[i],val);
-            mp[words[i]]++;
-        }
+     for(int i=n-1;i>=0;i--)
+     {
+        string temp=words[i];
+      //  Trie t;
+         ans+=mp[temp];
+        ans+=t.find(temp);
+        vector<ll>z=z_algo(temp);
+        t.insert(temp,z);
+         mp[temp]++;
+     }
         return ans;
-        
     }
 };
