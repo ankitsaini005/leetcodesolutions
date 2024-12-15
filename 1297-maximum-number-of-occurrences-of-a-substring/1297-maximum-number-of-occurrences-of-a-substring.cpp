@@ -3,7 +3,7 @@ public:
     int maxFreq(string s, int maxLetters, int minSize, int maxSize) {
         
         unordered_map<string,int> mp;
-        for(int k=minSize;k<=minSize;k++){
+        for(int k=minSize;k<=maxSize;k++){
             unordered_map<char,int> track;
             int count = 0;
             int i=0,j=0;
